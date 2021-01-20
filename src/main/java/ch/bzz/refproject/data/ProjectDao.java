@@ -24,7 +24,10 @@ public class ProjectDao implements Dao<Project, String>{
     @Override
     public List<Project> getAll() {
         List<Project> projectList = new ArrayList<>();
-        String sqlQuery="SELECT * FROM RefProject.Project;";
+        String sqlQuery="SELECT p.projectUUID, p.title, p.status, p.startDate, " +
+                " p.endDate, p.categoryUUID, c.title " +
+                " FROM Project AS p JOIN Category AS c USING (categoryUUID) " +
+                " ORDER BY title, startDate";
 
         try {
             ResultSet resultSet = MySqlDB.sqlSelect(sqlQuery);
@@ -53,9 +56,12 @@ public class ProjectDao implements Dao<Project, String>{
 
     @Override
     public Project getEntity(String projectUUID) {
-        Project project = new Project;
+        Project project = new Project();
 
-        String sqlQuery = "";
+        String sqlQuery = "SELECT p.projectUUID, p.title, p.status, p.startDate, " +
+                " p.endDate, p.categoryUUID, c.title " +
+                " FROM Project AS p JOIN Category AS c USING (categoryUUID) " +
+                " WHERE projectUUID=?";
 
         Map<Integer, String> values = new HashMap<>();
         values.put(1,projectUUID);
@@ -82,7 +88,8 @@ public class ProjectDao implements Dao<Project, String>{
 
     @Override
     public Result delete(String projectUUID) {
-        String sqlQuery= "";
+        String sqlQuery= "DELETE FROM Project" +
+                " WHERE projectUUID=?"
         Map<Integer, String> values= new HashMap<>();
         values.put(1, projectUUID);
         try {
@@ -130,6 +137,17 @@ public class ProjectDao implements Dao<Project, String>{
             sqlEx.printStackTrace();
             throw new RuntimeException();
         }
+    }
+
+    /**
+     * Update a project in the table RefProject
+     *
+     * @param project
+     * @return Results
+     */
+
+    public Result update(Project project){
+        return null;
     }
 
     private void setValues(ResultSet resultSet, Project project) throws SQLException{
